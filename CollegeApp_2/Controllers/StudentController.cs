@@ -96,6 +96,7 @@ namespace CollegeApp_2.Controllers
 
             var studentDTO = new StudentDTO()
             {
+
                 Id = student.Id,
                 StudentName = student.StudentName,
                 Adres = student.Adres,
@@ -107,6 +108,35 @@ namespace CollegeApp_2.Controllers
             return Ok(studentDTO);
 
         }
+
+
+        [HttpPost]
+        [Route("Create")]        // Name Routenin adi
+        // api/Student/Create
+        [ProducesResponseType(StatusCodes.Status200OK)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
+        public ActionResult<StudentDTO> CreateStudent([FromBody]StudentDTO model)
+        {
+            if (model == null)
+                return BadRequest();
+
+            int newId = CollegeRepository.Students.LastOrDefault().Id + 1 ;
+
+            Student student = new Student()
+            {
+                Id =newId,
+                StudentName = model.StudentName,
+                Adres = model.Adres,
+                Email = model.Email,
+            };
+
+            CollegeRepository.Students.Add(student);
+
+            model.Id = student.Id;
+
+            return Ok(student);
+        }
+
 
         [HttpDelete("{id:int}", Name = "DeleteStudent")]        // Name Routenin adi
         [ProducesResponseType(StatusCodes.Status200OK)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
