@@ -15,6 +15,7 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<IEnumerable<Student>> GetStudents()
         {
+            var students = new List<Student>();
             // Ok - 200 - Success
             return Ok(CollegeRepository.Students);
 
