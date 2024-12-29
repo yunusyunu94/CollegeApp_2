@@ -6,7 +6,7 @@ using System.Xml.Linq;
 namespace CollegeApp_2.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    //[ApiController]
     public class StudentController : ControllerBase
     {
         [HttpGet]
@@ -118,6 +118,22 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<StudentDTO> CreateStudent([FromBody]StudentDTO model)
         {
+            //--------------------------------------------------------------------------------------------------------------------------
+
+            /// -----------------   VALİDATİON  --------------------------------
+
+            // Yukaridaki [ApiController] Yazmazsak Validationslari assagidaki gibi kontrol edebiliz
+
+            //if (!ModelState.IsValid)
+            //    return BadRequest(ModelState);
+
+            // NOT  :  Yukariya [ApiController] yazdigimizdan ilgili DTO larda validationlari yaparak Controllerde birsey yapmamiza gerek yok
+
+            ///
+
+            //--------------------------------------------------------------------------------------------------------------------------
+
+
             if (model == null)
                 return BadRequest();
 
