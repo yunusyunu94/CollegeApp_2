@@ -149,14 +149,9 @@ namespace CollegeApp_2.Controllers
 
             }
 
-
-
-
             ///
 
             //--------------------------------------------------------------------------------------------------------------------------
-
-
 
 
 
@@ -171,6 +166,10 @@ namespace CollegeApp_2.Controllers
                 StudentName = model.StudentName,
                 Adres = model.Adres,
                 Email = model.Email,
+                Age = model.Age,
+                AdmissionDate = model.AdmissionDate,
+                Password = model.Password,
+                ConfirmPassword = model.ConfirmPassword,
             };
 
             CollegeRepository.Students.Add(student);
@@ -182,6 +181,35 @@ namespace CollegeApp_2.Controllers
             // New student details
             return CreatedAtRoute("GetStudentsById", new { id = model.Id }, model); // Yeni olusturulan kayit  icin baglantiyi hazirlayacak
             return Ok(model);
+        }
+
+
+        [HttpPut]
+        [Route("Update")]
+        // api/Student/Update
+        [ProducesResponseType(StatusCodes.Status204NoContent)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
+        public ActionResult UpdateStudent([FromBody] StudentDTO model)
+        {
+            if (model == null || model.Id <= 0)
+                BadRequest();
+
+            var existringStudenr = CollegeRepository.Students.Where(s => s.Id == model.Id).FirstOrDefault();
+
+            if (existringStudenr == null)
+                return NotFound();
+
+            existringStudenr.StudentName = model.StudentName;
+            existringStudenr.Email = model.Email;
+            existringStudenr.Adres = model.Adres;
+            existringStudenr.Age = model.Age;
+            existringStudenr.AdmissionDate = model.AdmissionDate;
+            existringStudenr.Password = model.Password;
+            existringStudenr.ConfirmPassword = model.ConfirmPassword;
+            
+            // 204 Kodu kayıt olundu icerik yok
+            return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
         }
 
 
