@@ -1,6 +1,7 @@
 ﻿using CollegeApp_2.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 
 namespace CollegeApp_2.Controllers
 {
@@ -10,36 +11,69 @@ namespace CollegeApp_2.Controllers
     {
         [HttpGet]
         [Route("All", Name = "GetStudents")] // Name Routenin adi
-        public IEnumerable<Student> GetStudents()
+        public ActionResult<IEnumerable<Student>> GetStudents()
         {
-            return CollegeRepository.Students;
+            // Ok - 200 - Success
+            return Ok(CollegeRepository.Students);
 
         }
 
         [HttpGet]
-        [Route("{id}", Name = "GetStudentsById")]
-        public Student GetStudentsById(int id)
+        [Route("{id:int}", Name = "GetStudentsById")]
+        public ActionResult<Student> GetStudentsById(int id)
         {
-            return CollegeRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+            // BadRequest - 400 - BadRequest - Ciend Error
+            if (id <= 0)
+                return BadRequest();
+
+            var student = CollegeRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+
+            // NotFound - 404 - NotFound - Ciend Error
+            if (student == null)
+                return NotFound($"The Student id {id} not fount ");
+
+            // Ok - 200 - Success
+            return Ok(student);
 
         }
 
         [HttpGet("{name}", Name = "GetStudentsByName")]
-        public Student GetStudentsByName(string name)
+        public ActionResult<Student> GetStudentsByName(string name)
         {
-            return CollegeRepository.Students.Where(n => n.StudentName == name).FirstOrDefault();
+            // BadRequest - 400 - BadRequest - Ciend Error
+            if (string.IsNullOrEmpty(name))
+                return BadRequest();
+
+
+            var student = CollegeRepository.Students.Where(n => n.StudentName == name).FirstOrDefault();
+
+            // NotFound - 404 - NotFound - Ciend Error
+            if (student == null)
+                return NotFound($"The Student id {name} not fount ");
+
+            // Ok - 200 - Success
+            return Ok(student);
 
         }
 
-        [HttpDelete("{id}", Name = "DeleteStudent")]
-        public bool DeleteStudent(int id)
+        [HttpDelete("{id:int}", Name = "DeleteStudent")]
+        public ActionResult<bool> DeleteStudent(int id)
         {
+            // BadRequest - 400 - BadRequest - Ciend Error
+            if (id <= 0)
+                return BadRequest();
+
+
             var student = CollegeRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+
+            // NotFound - 404 - NotFound - Ciend Error
+            if (student == null)
+                return NotFound($"The Student id {id} not fount ");
+
             CollegeRepository.Students.Remove(student);
 
-
-
-            return true;
+            // Ok - 200 - Success
+            return Ok(true);
         }
     }
 }
