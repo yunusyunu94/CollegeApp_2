@@ -120,7 +120,7 @@ namespace CollegeApp_2.Controllers
             if (model == null)
                 return BadRequest();
 
-            int newId = CollegeRepository.Students.LastOrDefault().Id + 1;
+            int newId = CollegeRepository.Students.LastOrDefault().Id + 1 ;
 
             Student student = new Student()
             {
