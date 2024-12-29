@@ -15,9 +15,32 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<IEnumerable<Student>> GetStudents()
         {
-            var students = new List<Student>();
+
+            //var students = new List<StudentDTO>();
+
+            //foreach (var item in CollegeRepository.Students)
+            //{
+            //    StudentDTO obj = new StudentDTO()
+            //    {
+            //        Id = item.Id,
+            //        StudentName = item.StudentName,
+            //        Adres = item.Adres,
+            //        Email = item.Email,
+            //    };
+            //}
+
+            // VEYAAAA
+
+            var students = CollegeRepository.Students.Select(s => new StudentDTO()
+            {
+                Id = s.Id,
+                StudentName = s.StudentName,
+                Adres = s.Adres,
+                Email = s.Email,
+            });
+
             // Ok - 200 - Success
-            return Ok(CollegeRepository.Students);
+            return Ok(students);
 
         }
 
@@ -39,8 +62,17 @@ namespace CollegeApp_2.Controllers
             if (student == null)
                 return NotFound($"The Student id {id} not fount ");
 
+            var studentDTO = new StudentDTO()
+            {
+                Id = student.Id,
+                StudentName = student.StudentName,
+                Adres = student.Adres,
+                Email = student.Email,
+            };
+
+
             // Ok - 200 - Success
-            return Ok(student);
+            return Ok(studentDTO);
 
         }
 
@@ -62,8 +94,17 @@ namespace CollegeApp_2.Controllers
             if (student == null)
                 return NotFound($"The Student id {name} not fount ");
 
+            var studentDTO = new StudentDTO()
+            {
+                Id = student.Id,
+                StudentName = student.StudentName,
+                Adres = student.Adres,
+                Email = student.Email,
+            };
+
+
             // Ok - 200 - Success
-            return Ok(student);
+            return Ok(studentDTO);
 
         }
 
