@@ -6,7 +6,7 @@ using System.Xml.Linq;
 namespace CollegeApp_2.Controllers
 {
     [Route("api/[controller]")]
-    //[ApiController]
+    [ApiController]
     public class StudentController : ControllerBase
     {
         [HttpGet]
