@@ -10,7 +10,9 @@ namespace CollegeApp_2.Controllers
     public class StudentController : ControllerBase
     {
         [HttpGet]
-        [Route("All", Name = "GetStudents")] // Name Routenin adi
+        [Route("All", Name = "GetStudents")]                        // Name Routenin adi
+        [ProducesResponseType(StatusCodes.Status200OK)]            // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<IEnumerable<Student>> GetStudents()
         {
             // Ok - 200 - Success
@@ -19,7 +21,11 @@ namespace CollegeApp_2.Controllers
         }
 
         [HttpGet]
-        [Route("{id:int}", Name = "GetStudentsById")]
+        [Route("{id:int}", Name = "GetStudentsById")]              // Name Routenin adi
+        [ProducesResponseType(StatusCodes.Status200OK)]            // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<Student> GetStudentsById(int id)
         {
             // BadRequest - 400 - BadRequest - Ciend Error
@@ -37,7 +43,11 @@ namespace CollegeApp_2.Controllers
 
         }
 
-        [HttpGet("{name}", Name = "GetStudentsByName")]
+        [HttpGet("{name}", Name = "GetStudentsByName")]         // Name Routenin adi
+        [ProducesResponseType(StatusCodes.Status200OK)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<Student> GetStudentsByName(string name)
         {
             // BadRequest - 400 - BadRequest - Ciend Error
@@ -56,7 +66,11 @@ namespace CollegeApp_2.Controllers
 
         }
 
-        [HttpDelete("{id:int}", Name = "DeleteStudent")]
+        [HttpDelete("{id:int}", Name = "DeleteStudent")]        // Name Routenin adi
+        [ProducesResponseType(StatusCodes.Status200OK)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<bool> DeleteStudent(int id)
         {
             // BadRequest - 400 - BadRequest - Ciend Error
