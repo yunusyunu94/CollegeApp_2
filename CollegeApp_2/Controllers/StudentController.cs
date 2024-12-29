@@ -9,16 +9,37 @@ namespace CollegeApp_2.Controllers
     public class StudentController : ControllerBase
     {
         [HttpGet]
+        [Route("All", Name = "GetStudents")] // Name Routenin adi
         public IEnumerable<Student> GetStudents()
         {
             return CollegeRepository.Students;
-            
+
         }
-        [HttpGet("{id:int}")]
+
+        [HttpGet]
+        [Route("{id}", Name = "GetStudentsById")]
         public Student GetStudentsById(int id)
         {
             return CollegeRepository.Students.Where(n => n.Id == id).FirstOrDefault();
-            
+
+        }
+
+        [HttpGet("{name}", Name = "GetStudentsByName")]
+        public Student GetStudentsByName(string name)
+        {
+            return CollegeRepository.Students.Where(n => n.StudentName == name).FirstOrDefault();
+
+        }
+
+        [HttpDelete("{id}", Name = "DeleteStudent")]
+        public bool DeleteStudent(int id)
+        {
+            var student = CollegeRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+            CollegeRepository.Students.Remove(student);
+
+
+
+            return true;
         }
     }
 }
