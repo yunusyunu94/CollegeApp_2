@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using CollegeApp_2.Validators;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace CollegeApp_2.Model
@@ -17,6 +18,10 @@ namespace CollegeApp_2.Model
 
         [Range(10,20)]                  // 10 ile 20 arasinda olmalidir
         public int Age { get; set; }
+
+        [DataCheck]
+        public DateTime AdmissionDate { get; set; } // ogrenci kabul tarihi
+        // StudentController de DateTime kontrolunu CreateStudent Actionda sagladik
 
         [Required]
         public string Adres { get; set; }
