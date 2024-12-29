@@ -116,7 +116,7 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult<StudentDTO> CreateStudent([FromBody]StudentDTO model)
+        public ActionResult<StudentDTO> CreateStudent([FromBody] StudentDTO model)
         {
             //--------------------------------------------------------------------------------------------------------------------------
 
@@ -129,19 +129,45 @@ namespace CollegeApp_2.Controllers
 
             // NOT  :  Yukariya [ApiController] yazdigimizdan ilgili DTO larda validationlari yaparak Controllerde birsey yapmamiza gerek yok
 
+
+
+            if (model.AdmissionDate <= DateTime.Now)
+            {
+                /// 1. Model duruma hata mesajı eklemek ( Drectly adding error message modalstade )
+
+                // ModelState.AddModelError("AdmissionDate error", "Admission date must be greater than or equal to todays date");
+                // return BadRequest(ModelState);
+
+                ///
+
+
+                /// 2. Ozel metrigi kullanarak ozel niteligi kullanmaktir. ( Using custom  attribute)
+
+                // Validators klasoru ekliiyoruz tum islimler orada
+
+                /// 
+
+            }
+
+
+
+
             ///
 
             //--------------------------------------------------------------------------------------------------------------------------
 
 
+
+
+
             if (model == null)
                 return BadRequest();
 
-            int newId = CollegeRepository.Students.LastOrDefault().Id + 1 ;
+            int newId = CollegeRepository.Students.LastOrDefault().Id + 1;
 
             Student student = new Student()
             {
-                Id =newId,
+                Id = newId,
                 StudentName = model.StudentName,
                 Adres = model.Adres,
                 Email = model.Email,
@@ -154,7 +180,7 @@ namespace CollegeApp_2.Controllers
             // Status - 201
             // http://localhost:5164/api/Student/3
             // New student details
-            return CreatedAtRoute("GetStudentsById", new { id=model.Id },model ); // Yeni olusturulan kayit  icin baglantiyi hazirlayacak
+            return CreatedAtRoute("GetStudentsById", new { id = model.Id }, model); // Yeni olusturulan kayit  icin baglantiyi hazirlayacak
             return Ok(model);
         }
 
