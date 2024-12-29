@@ -113,7 +113,8 @@ namespace CollegeApp_2.Controllers
         [HttpPost]
         [Route("Create")]        // Name Routenin adi
         // api/Student/Create
-        [ProducesResponseType(StatusCodes.Status200OK)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status201Created)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<StudentDTO> CreateStudent([FromBody]StudentDTO model)
         {
@@ -134,7 +135,11 @@ namespace CollegeApp_2.Controllers
 
             model.Id = student.Id;
 
-            return Ok(student);
+            // Status - 201
+            // http://localhost:5164/api/Student/3
+            // New student details
+            return CreatedAtRoute("GetStudentsById", new { id=model.Id },model ); // Yeni olusturulan kayit  icin baglantiyi hazirlayacak
+            return Ok(model);
         }
 
 
