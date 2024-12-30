@@ -274,7 +274,7 @@ namespace CollegeApp_2.Controllers
 
 
 
-        [HttpDelete("{id:int}", Name = "DeleteStudent")]        // Name Routenin adi
+        [HttpDelete("Delete+{id:int}", Name = "DeleteStudent")]        // Name Routenin adi
         [ProducesResponseType(StatusCodes.Status200OK)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
