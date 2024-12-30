@@ -1,6 +1,8 @@
 ﻿using CollegeApp_2.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Xml.Linq;
 
 namespace CollegeApp_2.Controllers
@@ -37,6 +39,10 @@ namespace CollegeApp_2.Controllers
                 StudentName = s.StudentName,
                 Adres = s.Adres,
                 Email = s.Email,
+                Age = s.Age,
+                AdmissionDate = s.AdmissionDate,
+                Password = s.Password,
+                ConfirmPassword = s.ConfirmPassword
             });
 
             // Ok - 200 - Success
@@ -131,8 +137,8 @@ namespace CollegeApp_2.Controllers
 
 
 
-            if (model.AdmissionDate <= DateTime.Now)
-            {
+            //if (model.AdmissionDate <= DateTime.Now)
+            //{
                 /// 1. Model duruma hata mesajı eklemek ( Drectly adding error message modalstade )
 
                 // ModelState.AddModelError("AdmissionDate error", "Admission date must be greater than or equal to todays date");
@@ -147,7 +153,7 @@ namespace CollegeApp_2.Controllers
 
                 /// 
 
-            }
+            //}
 
             ///
 
@@ -211,6 +217,61 @@ namespace CollegeApp_2.Controllers
             // 204 Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
         }
+
+        // HttpPatch : Guncellemede tek bir yeri guncelliyorsak tum alanlati sunucuya gondermek yerine guncelledigimiz alani gondermemizi saglar
+        // Assagidaki paketleri Nugetten kurmalisin :
+        // 1 - Microsoft.AspNetCore.JsonPatch
+        // 2 - Microsoft.AspNetCore.MVC.NewTonSoftJson
+
+        // Sonra Program.cs de AddNewtonsoftJson ni ekledik
+
+        [HttpPatch]
+        [Route("{id:int} UpdatePartial")]   
+        // api/Student/1/UpdatePartial
+        [ProducesResponseType(StatusCodes.Status204NoContent)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
+        public ActionResult UpdateStudentPartial(int id, [FromBody] JsonPatchDocument<StudentDTO> patchDocument)
+        {
+            if (patchDocument == null || id <= 0)
+                BadRequest();
+
+            var existringStudenr = CollegeRepository.Students.Where(s => s.Id == id).FirstOrDefault();
+
+            if (existringStudenr == null)
+                return NotFound();
+
+            var studentDTO = new StudentDTO
+            {
+                Id = existringStudenr.Id,
+                StudentName = existringStudenr.StudentName,
+                Adres = existringStudenr.Adres,
+                Email = existringStudenr.Email,
+                Age = existringStudenr.Age,
+                AdmissionDate = existringStudenr.AdmissionDate,
+                Password = existringStudenr.Password,
+                ConfirmPassword = existringStudenr.ConfirmPassword
+                
+            };
+
+            patchDocument.ApplyTo(studentDTO, ModelState); // ogrenci DTO suna uygulatiyoruz. Birseyler ters giderse ModelState ogrenicez
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+
+            existringStudenr.StudentName = studentDTO.StudentName;
+            existringStudenr.Email = studentDTO.Email;
+            existringStudenr.Adres = studentDTO.Adres;
+            existringStudenr.Age = studentDTO.Age;
+            existringStudenr.AdmissionDate = studentDTO.AdmissionDate;
+            existringStudenr.Password = studentDTO.Password;
+            existringStudenr.ConfirmPassword = studentDTO.ConfirmPassword;
+
+            // 204 - NoContent Kodu kayıt olundu icerik yok
+            return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
+        }
+
 
 
         [HttpDelete("{id:int}", Name = "DeleteStudent")]        // Name Routenin adi

@@ -6,17 +6,25 @@
                 new Student
                 {
                     Id = 1,
-                    StudentName = "Student 1",
-                    Email ="Studentemail1@hotmail.com",
-                    Adres = "Hyd, INDIA"
-
+                    StudentName = "Yunus",
+                    Email ="yunus@hotmail.com",
+                    Adres = "Hyd, INDIA",
+                    Age = 11,
+                    AdmissionDate = DateTime.Now,
+                    Password =  "f",
+                    ConfirmPassword = "f"
+                    
                 },
                 new Student
                 {
                     Id = 2,
-                    StudentName = "Student 2",
-                    Email = "Studentemail1@hotmai2.com",
-                    Adres = "Banglore, INDIA"
+                    StudentName = "Anil",
+                    Email = "Anil@hotmail.com",
+                    Adres = "Banglore, INDIA",
+                    Age = 11,
+                    AdmissionDate = DateTime.Now,
+                    Password =  "f",
+                    ConfirmPassword = "f"
 
                 }
          };
