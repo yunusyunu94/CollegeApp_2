@@ -10,7 +10,7 @@
                     Email ="yunus@hotmail.com",
                     Adres = "Hyd, INDIA",
                     Age = 11,
-                    AdmissionDate = DateTime.Now,
+                    //AdmissionDate = DateTime.Now,
                     Password =  "f",
                     ConfirmPassword = "f"
                     
@@ -22,7 +22,7 @@
                     Email = "Anil@hotmail.com",
                     Adres = "Banglore, INDIA",
                     Age = 11,
-                    AdmissionDate = DateTime.Now,
+                    //AdmissionDate = DateTime.Now,
                     Password =  "f",
                     ConfirmPassword = "f"
 
