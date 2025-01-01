@@ -19,8 +19,8 @@ namespace CollegeApp_2.Model
         [Range(10,20)]                  // 10 ile 20 arasinda olmalidir
         public int Age { get; set; }
 
-        //[DataCheck]
-        //public DateTime AdmissionDate { get; set; } // ogrenci kabul tarihi
+        [DataCheck]
+        public DateTime AdmissionDate { get; set; } // ogrenci kabul tarihi
         // StudentController de DateTime kontrolunu CreateStudent Actionda sagladik
 
         [Required]
