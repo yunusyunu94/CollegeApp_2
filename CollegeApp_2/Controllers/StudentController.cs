@@ -40,7 +40,7 @@ namespace CollegeApp_2.Controllers
                 Adres = s.Adres,
                 Email = s.Email,
                 Age = s.Age,
-                AdmissionDate = s.AdmissionDate,
+                //AdmissionDate = s.AdmissionDate,
                 Password = s.Password,
                 ConfirmPassword = s.ConfirmPassword
             });
@@ -107,6 +107,9 @@ namespace CollegeApp_2.Controllers
                 StudentName = student.StudentName,
                 Adres = student.Adres,
                 Email = student.Email,
+                Age = student.Age,
+                Password = student.Password,
+                ConfirmPassword = student.ConfirmPassword,
             };
 
 
@@ -173,7 +176,7 @@ namespace CollegeApp_2.Controllers
                 Adres = model.Adres,
                 Email = model.Email,
                 Age = model.Age,
-                AdmissionDate = model.AdmissionDate,
+                //AdmissionDate = model.AdmissionDate,
                 Password = model.Password,
                 ConfirmPassword = model.ConfirmPassword,
             };
@@ -210,7 +213,7 @@ namespace CollegeApp_2.Controllers
             existringStudenr.Email = model.Email;
             existringStudenr.Adres = model.Adres;
             existringStudenr.Age = model.Age;
-            existringStudenr.AdmissionDate = model.AdmissionDate;
+            //existringStudenr.AdmissionDate = model.AdmissionDate;
             existringStudenr.Password = model.Password;
             existringStudenr.ConfirmPassword = model.ConfirmPassword;
             
@@ -248,7 +251,7 @@ namespace CollegeApp_2.Controllers
                 Adres = existringStudenr.Adres,
                 Email = existringStudenr.Email,
                 Age = existringStudenr.Age,
-                AdmissionDate = existringStudenr.AdmissionDate,
+                //AdmissionDate = existringStudenr.AdmissionDate,
                 Password = existringStudenr.Password,
                 ConfirmPassword = existringStudenr.ConfirmPassword
                 
@@ -264,7 +267,7 @@ namespace CollegeApp_2.Controllers
             existringStudenr.Email = studentDTO.Email;
             existringStudenr.Adres = studentDTO.Adres;
             existringStudenr.Age = studentDTO.Age;
-            existringStudenr.AdmissionDate = studentDTO.AdmissionDate;
+            //existringStudenr.AdmissionDate = studentDTO.AdmissionDate;
             existringStudenr.Password = studentDTO.Password;
             existringStudenr.ConfirmPassword = studentDTO.ConfirmPassword;
 
