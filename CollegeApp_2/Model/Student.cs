@@ -10,7 +10,7 @@ namespace CollegeApp_2.Model
         public string Adres { get; set; }
         public int Age { get; set; }
 
-        public DateTime AdmissionDate { get; set; } // ogrenci kabul tarihi
+        //public DateTime AdmissionDate { get; set; } // ogrenci kabul tarihi
 
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
