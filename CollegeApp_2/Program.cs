@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Once konsoru temizlicez ;
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole(); // Yalnizca konsol icin
-//builder.Logging.AddDebug(); // Yalnizca hata ayiklama giris yapmak icin
+builder.Logging.AddDebug(); // Yalnizca hata ayiklama giris yapmak icin
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
