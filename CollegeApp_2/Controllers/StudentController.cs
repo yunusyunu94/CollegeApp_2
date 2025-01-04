@@ -12,13 +12,18 @@ namespace CollegeApp_2.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly Student _student;
-        private LogToDb _myLogger;
 
-        public StudentController() 
+
+        // LOGGER ; Kullanilabilir kaydedici yapalim ;
+        private readonly ILogger<StudentController> _logger;
+
+        public StudentController(ILogger<StudentController> logger)
         {
-            _myLogger = new LogToDb();
+            _logger = logger;
         }
+
+
+
 
         [HttpGet]
         [Route("All", Name = "GetStudents")]                        // Name Routenin adi
@@ -42,7 +47,12 @@ namespace CollegeApp_2.Controllers
 
             // VEYAAAA
 
-            _myLogger.Log("Your Massege");
+
+
+            // LOGGER ;
+            _logger.LogInformation("GetSudents method started");
+
+
 
             var students = CollegeRepository.Students.Select(s => new StudentDTO()
             {
@@ -69,15 +79,28 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
         public ActionResult<Student> GetStudentsById(int id)
         {
+
+            // ----------------------------------------------- LGGER ;
             // BadRequest - 400 - BadRequest - Ciend Error
             if (id <= 0)
+            {
+                // Kotu istek varsa bureya gunluk bilgilerinide ekleyelim
+                _logger.LogWarning("Bad Reguest");
                 return BadRequest();
+            }
+
 
             var student = CollegeRepository.Students.Where(n => n.Id == id).FirstOrDefault();
 
+            // ----------------------------------------------  LGGER ;
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
+            {
+                _logger.LogError("Student not fount with given Id");
+
                 return NotFound($"The Student id {id} not fount ");
+            }
+
 
             var studentDTO = new StudentDTO()
             {
@@ -158,19 +181,19 @@ namespace CollegeApp_2.Controllers
 
             //if (model.AdmissionDate <= DateTime.Now)
             //{
-                /// 1. Model duruma hata mesajı eklemek ( Drectly adding error message modalstade )
+            /// 1. Model duruma hata mesajı eklemek ( Drectly adding error message modalstade )
 
-                // ModelState.AddModelError("AdmissionDate error", "Admission date must be greater than or equal to todays date");
-                // return BadRequest(ModelState);
+            // ModelState.AddModelError("AdmissionDate error", "Admission date must be greater than or equal to todays date");
+            // return BadRequest(ModelState);
 
-                ///
+            ///
 
 
-                /// 2. Ozel metrigi kullanarak ozel niteligi kullanmaktir. ( Using custom  attribute)
+            /// 2. Ozel metrigi kullanarak ozel niteligi kullanmaktir. ( Using custom  attribute)
 
-                // Validators klasoru ekliiyoruz tum islimler orada
+            // Validators klasoru ekliiyoruz tum islimler orada
 
-                /// 
+            /// 
 
             //}
 
@@ -232,7 +255,7 @@ namespace CollegeApp_2.Controllers
             existringStudenr.AdmissionDate = model.AdmissionDate;
             existringStudenr.Password = model.Password;
             existringStudenr.ConfirmPassword = model.ConfirmPassword;
-            
+
             // 204 Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
         }
@@ -245,7 +268,7 @@ namespace CollegeApp_2.Controllers
         // Sonra Program.cs de AddNewtonsoftJson ni ekledik
 
         [HttpPatch]
-        [Route("{id:int} UpdatePartial")]   
+        [Route("{id:int} UpdatePartial")]
         // api/Student/1/UpdatePartial
         [ProducesResponseType(StatusCodes.Status204NoContent)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -270,7 +293,7 @@ namespace CollegeApp_2.Controllers
                 AdmissionDate = existringStudenr.AdmissionDate,
                 Password = existringStudenr.Password,
                 ConfirmPassword = existringStudenr.ConfirmPassword
-                
+
             };
 
             patchDocument.ApplyTo(studentDTO, ModelState); // ogrenci DTO suna uygulatiyoruz. Birseyler ters giderse ModelState ogrenicez
