@@ -8,23 +8,45 @@ namespace CollegeApp_2.Controllers
     [ApiController]
     public class DemoController : ControllerBase
     {
-        // 1. Strongly coumpled/Tightlt coumpled 
+        /// -------------------- 1. Strongly coumpled/Tightlt coumpled -------------------
+
+        //private readonly IMyLogger _myLogger;
+
+        //public DemoController()
+        //{
+        //    //_myLogger = new LogToFile();
+        //    _myLogger = new LogToDb();
+
+        //}
+
+        //[HttpGet]
+        //public ActionResult Index() 
+        //{
+        //    _myLogger.Log("Index method started");
+        //    return Ok();
+
+        //}
+
+
+        /// ---------------------- 2. Loosely coumpled ------------------------
+        
+        /// Program.cs de Container olusturup bagımliligi minimize etmeliyiz
 
         private readonly IMyLogger _myLogger;
 
-        public DemoController()
+        public DemoController(IMyLogger myLogger)
         {
             //_myLogger = new LogToFile();
-            _myLogger = new LogToDb();
-        
+            _myLogger = myLogger;
+
         }
 
         [HttpGet]
-        public ActionResult Index() 
+        public ActionResult Index()
         {
             _myLogger.Log("Index method started");
             return Ok();
-        
+
         }
 
 
@@ -36,13 +58,5 @@ namespace CollegeApp_2.Controllers
 
 
 
-
-
-
-
-
-
-
-        // 1. Loosely coumpled
     }
 }
