@@ -29,22 +29,47 @@ namespace CollegeApp_2.Controllers
 
 
         /// ---------------------- 2. Loosely coumpled ------------------------
-        
+
         /// Program.cs de Container olusturup bagımliligi minimize etmeliyiz
 
-        private readonly IMyLogger _myLogger;
+        //private readonly IMyLogger _myLogger;
 
-        public DemoController(IMyLogger myLogger)
+        //public DemoController(IMyLogger myLogger)
+        //{
+        //    //_myLogger = new LogToFile();
+        //    _myLogger = myLogger;
+
+        //}
+
+        //[HttpGet]
+        //public ActionResult Index()
+        //{
+        //    _myLogger.Log("Index method started");
+        //    return Ok();
+
+        //}
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        /// ---------------   LOGGER SEVİYELERİNİ DENİCEZ  -----------------------------------------------------------
+
+
+        private readonly ILogger<StudentController> _logger;
+
+        public DemoController(ILogger<StudentController> logger)
         {
-            //_myLogger = new LogToFile();
-            _myLogger = myLogger;
-
+            _logger = logger;
         }
 
         [HttpGet]
         public ActionResult Index()
         {
-            _myLogger.Log("Index method started");
+            _logger.LogTrace ("Log message from trace method");
+            _logger.LogDebug("Log message from Debug method");
+            _logger.LogInformation("Log message from Information method");
+            _logger.LogWarning("Log message from Warning method");
+            _logger.LogError("Log message from Error method");
+            _logger.LogCritical("Log message from Critical method");  
             return Ok();
 
         }
