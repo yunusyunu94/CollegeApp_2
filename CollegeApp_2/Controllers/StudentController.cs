@@ -1,4 +1,5 @@
 ﻿using CollegeApp_2.Model;
+using CollegeApp_2.Mylogging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,14 @@ namespace CollegeApp_2.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
+        private readonly Student _student;
+        private LogToDb _myLogger;
+
+        public StudentController() 
+        {
+            _myLogger = new LogToDb();
+        }
+
         [HttpGet]
         [Route("All", Name = "GetStudents")]                        // Name Routenin adi
         [ProducesResponseType(StatusCodes.Status200OK)]            // Hata kodlarin kullanicilar tarafindan okunabilmesi 
@@ -32,6 +41,8 @@ namespace CollegeApp_2.Controllers
             //}
 
             // VEYAAAA
+
+            _myLogger.Log("Your Massege");
 
             var students = CollegeRepository.Students.Select(s => new StudentDTO()
             {
