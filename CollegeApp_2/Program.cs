@@ -18,7 +18,9 @@ builder.Services.AddSwaggerGen();
 
 /// ---------------------- 2. Loosely coumpled ------------------------
 
-builder.Services.AddScoped<IMyLogger, LogToFile>();
+builder.Services.AddScoped<IMyLogger, LogToFile>();     // Ýstege ( reguest ) 1 neste uretir 
+builder.Services.AddSingleton<IMyLogger, LogToFile>();  // Her ayri istege ( reguest ) neste uretir 
+builder.Services.AddTransient<IMyLogger, LogToFile>();  // Her Ýstege ( reguest ) ayri ayri neste uretir 
 
 
 
