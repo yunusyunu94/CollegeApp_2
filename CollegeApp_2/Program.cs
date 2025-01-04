@@ -1,3 +1,4 @@
+using CollegeApp_2.Mylogging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -13,6 +14,17 @@ builder.Services.AddControllers(Options => Options.ReturnHttpNotAcceptable = tru
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+/// ---------------------- 2. Loosely coumpled ------------------------
+
+builder.Services.AddScoped<IMyLogger, LogToFile>();
+
+
+
+
+
+
 
 var app = builder.Build();
 
