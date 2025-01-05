@@ -2,16 +2,32 @@ using System;
 using CollegeApp_2.Mylogging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Serilog;
+
+
+var builder = WebApplication.CreateBuilder(args);
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// Logger ;
-var builder = WebApplication.CreateBuilder(args);
-// bir kayit chazini kullanmak ;
-// Once konsoru temizlicez ;
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole(); // Yalnizca konsol icin
-builder.Logging.AddDebug(); // Yalnizca hata ayiklama giris yapmak icin
+/// -----------------------------------------   SERÝ LOGGER    ---------------------------------------    
+
+//  Oncelikle Nugetten bu iki paketi kuruyoruz ; Serilog.AspNetCore ve Serilog.Sinks.File
+// Sonra assagiidaki kodu SeriLogger githubdan aliyoruz linki ; https://github.com/serilog/serilog-aspnetcore
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information() // Gunluk seviyelerinden bahsetmek istersek
+    .WriteTo.File("Log/log.txt", rollingInterval:RollingInterval.Minute) // buradaki Consolu kaldiriyoruz bir dosya ( File ) saglayicisi istiyoruz. rollingInterval:RollingInterval.Day Hergun icin metin dosyasi olusturur
+    .CreateLogger();
+
+// Yukarýdaki koddan sonra assagidaki builder ediyoruz.
+
+// User this line to override the built-in loggers ;
+//builder.Host.UseSerilog();     // Bunda Konsola yansitmaz
+// Vaya
+//builder.Services.AddSerilog(); // Bunda Konsola yansitmaz
+
+// Use serilog along with built-in loggers ;
+builder.Logging.AddSerilog();   // Bunda Konsol dahil tum saglayicilarda gorebiliriz
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
