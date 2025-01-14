@@ -14,10 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 //  Oncelikle Nugetten bu iki paketi kuruyoruz ; Serilog.AspNetCore ve Serilog.Sinks.File
 // Sonra assagiidaki kodu SeriLogger githubdan aliyoruz linki ; https://github.com/serilog/serilog-aspnetcore
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information() // Gunluk seviyelerinden bahsetmek istersek
-    .WriteTo.File("Log/log.txt", rollingInterval:RollingInterval.Minute) // buradaki Consolu kaldiriyoruz bir dosya ( File ) saglayicisi istiyoruz. rollingInterval:RollingInterval.Day Hergun icin metin dosyasi olusturur
-    .CreateLogger();
+//Log.Logger = new LoggerConfiguration()
+//    .MinimumLevel.Information() // Gunluk seviyelerinden bahsetmek istersek
+//    .WriteTo.File("Log/log.txt", rollingInterval:RollingInterval.Minute) // buradaki Consolu kaldiriyoruz bir dosya ( File ) saglayicisi istiyoruz. rollingInterval:RollingInterval.Day Hergun icin metin dosyasi olusturur
+//    .CreateLogger();
 
 // Yukarýdaki koddan sonra assagidaki builder ediyoruz.
 
@@ -27,10 +27,31 @@ Log.Logger = new LoggerConfiguration()
 //builder.Services.AddSerilog(); // Bunda Konsola yansitmaz
 
 // Use serilog along with built-in loggers ;
-builder.Logging.AddSerilog();   // Bunda Konsol dahil tum saglayicilarda gorebiliriz
+//builder.Logging.AddSerilog();   // Bunda Konsol dahil tum saglayicilarda gorebiliriz
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+//  -----------------------------------------   LOG4NET    ---------------------------------------------------------------
+
+// Nugetten " Microsoft.Extensions.Logging.Log4Net.AspNetCore " yukluyoruz. Assagýdakikodu yaziyoruz
+
+builder.Logging.ClearProviders();   // Tum yerlesik saglayicilari temizler
+builder.Logging.AddLog4Net();
+
+// Sonrasinda Configuration dosyasi icin projeye ADD kismindan NEW ÝTEM oradan WEB CONFÝGURTÝON FÝLE yi seciyoruz ve ismine " log4net.config " yaziyoruz
+// SOnra acilam dosyada herseyi siliyoruz ve içindeki kodu yapistiriyoruz
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 // Add services to the container.
