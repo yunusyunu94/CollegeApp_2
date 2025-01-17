@@ -1,5 +1,7 @@
 using System;
+using CollegeApp_2.Data;
 using CollegeApp_2.Mylogging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -42,7 +44,17 @@ builder.Logging.AddLog4Net();
 // Sonrasinda Configuration dosyasi icin projeye ADD kismindan NEW ÝTEM oradan WEB CONFÝGURTÝON FÝLE yi seciyoruz ve ismine " log4net.config " yaziyoruz
 // SOnra acilam dosyada herseyi siliyoruz ve içindeki kodu yapistiriyoruz
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+// -----------------------------------------   SQL SERVER    ---------------------------------------------------------------
+
+builder.Services.AddDbContext<CollegeDBContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("CollegeAppDBConnection")); // Hangi veri tabani kullanmak istedigimizi belirtiyoruz.
+                                                                                              // Appsettings.js de danimladigimiz baglandi dizisini
+                                                                                              // adini yaziyoruz.
+});
 
 
 
