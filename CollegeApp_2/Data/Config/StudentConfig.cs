@@ -8,7 +8,7 @@ namespace CollegeApp_2.Data.Config
     {
         public void Configure(EntityTypeBuilder<Student> builder)
         {
-            builder.ToTable("Student");
+            builder.ToTable("Students");
 
             builder.HasKey(x => x.Id);  // Student sinifinda KEY ibaresini kaldirabiliriz burada tanimliyoruz.
 

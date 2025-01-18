@@ -90,6 +90,7 @@ builder.Services.AddSingleton<IMyLogger, LogToFile>();  // Her ayri istege ( reg
 //builder.Services.AddTransient<IMyLogger, LogToFile>();  // Her İstege ( reguest ) ayri ayri neste uretir 
 
 
+
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 

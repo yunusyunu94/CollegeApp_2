@@ -1,9 +1,11 @@
-﻿using CollegeApp_2.Model;
+﻿using CollegeApp_2.Data;
+using CollegeApp_2.Model;
 using CollegeApp_2.Mylogging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using System.Xml.Linq;
 
 namespace CollegeApp_2.Controllers
@@ -16,10 +18,12 @@ namespace CollegeApp_2.Controllers
 
         // LOGGER ; Kullanilabilir kaydedici yapalim ;
         private readonly ILogger<StudentController> _logger;
+        private readonly CollegeDBContext _dbContext;
 
-        public StudentController(ILogger<StudentController> logger)
+        public StudentController(ILogger<StudentController> logger, CollegeDBContext dBContext)
         {
             _logger = logger;
+            _dbContext = dBContext;
         }
 
 
@@ -29,24 +33,8 @@ namespace CollegeApp_2.Controllers
         [Route("All", Name = "GetStudents")]                        // Name Routenin adi
         [ProducesResponseType(StatusCodes.Status200OK)]            // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult<IEnumerable<Student>> GetStudents()
+        public ActionResult<IEnumerable<StudentDTO>> GetStudents()
         {
-
-            //var students = new List<StudentDTO>();
-
-            //foreach (var item in CollegeRepository.Students)
-            //{
-            //    StudentDTO obj = new StudentDTO()
-            //    {
-            //        Id = item.Id,
-            //        StudentName = item.StudentName,
-            //        Adres = item.Adres,
-            //        Email = item.Email,
-            //    };
-            //}
-
-            // VEYAAAA
-
 
 
             // LOGGER ;
@@ -54,17 +42,14 @@ namespace CollegeApp_2.Controllers
 
 
 
-            var students = CollegeRepository.Students.Select(s => new StudentDTO()
+            var students = _dbContext.Students.Select(s => new StudentDTO()
             {
                 Id = s.Id,
                 StudentName = s.StudentName,
                 Adres = s.Adres,
                 Email = s.Email,
-                Age = s.Age,
-                //AdmissionDate = s.AdmissionDate,
-                Password = s.Password,
-                ConfirmPassword = s.ConfirmPassword
-            });
+                DOB = s.DOB,
+            }).ToList();
 
             // Ok - 200 - Success
             return Ok(students);
@@ -90,7 +75,7 @@ namespace CollegeApp_2.Controllers
             }
 
 
-            var student = CollegeRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+            var student = _dbContext.Students.Where(n => n.Id == id).FirstOrDefault();
 
             // ----------------------------------------------  LGGER ;
             // NotFound - 404 - NotFound - Ciend Error
@@ -108,10 +93,7 @@ namespace CollegeApp_2.Controllers
                 StudentName = student.StudentName,
                 Adres = student.Adres,
                 Email = student.Email,
-                Age = student.Age,
-                AdmissionDate = student.AdmissionDate,
-                Password = student.Password,
-                ConfirmPassword = student.ConfirmPassword
+                DOB= student.DOB,
             };
 
 
@@ -132,7 +114,7 @@ namespace CollegeApp_2.Controllers
                 return BadRequest();
 
 
-            var student = CollegeRepository.Students.Where(n => n.StudentName == name).FirstOrDefault();
+            var student = _dbContext.Students.Where(n => n.StudentName == name).FirstOrDefault();
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
@@ -145,10 +127,7 @@ namespace CollegeApp_2.Controllers
                 StudentName = student.StudentName,
                 Adres = student.Adres,
                 Email = student.Email,
-                Age = student.Age,
-                AdmissionDate = student.AdmissionDate,
-                Password = student.Password,
-                ConfirmPassword = student.ConfirmPassword,
+                DOB = student.DOB,
             };
 
 
@@ -206,23 +185,18 @@ namespace CollegeApp_2.Controllers
             if (model == null)
                 return BadRequest();
 
-            int newId = CollegeRepository.Students.LastOrDefault().Id + 1;
 
             Student student = new Student()
             {
-                Id = newId,
                 StudentName = model.StudentName,
                 Adres = model.Adres,
                 Email = model.Email,
-                Age = model.Age,
-                AdmissionDate = model.AdmissionDate,
-                Password = model.Password,
-                ConfirmPassword = model.ConfirmPassword,
+                DOB=model.DOB,
             };
 
-            CollegeRepository.Students.Add(student);
+            _dbContext.Students.Add(student);
 
-            model.Id = student.Id;
+            _dbContext.SaveChanges(); // Vari tabanina degisiklikleri kaydediyoruz
 
             // Status - 201
             // http://localhost:5164/api/Student/3
@@ -243,7 +217,7 @@ namespace CollegeApp_2.Controllers
             if (model == null || model.Id <= 0)
                 BadRequest();
 
-            var existringStudenr = CollegeRepository.Students.Where(s => s.Id == model.Id).FirstOrDefault();
+            var existringStudenr = _dbContext.Students.Where(s => s.Id == model.Id).FirstOrDefault();
 
             if (existringStudenr == null)
                 return NotFound();
@@ -251,10 +225,9 @@ namespace CollegeApp_2.Controllers
             existringStudenr.StudentName = model.StudentName;
             existringStudenr.Email = model.Email;
             existringStudenr.Adres = model.Adres;
-            existringStudenr.Age = model.Age;
-            existringStudenr.AdmissionDate = model.AdmissionDate;
-            existringStudenr.Password = model.Password;
-            existringStudenr.ConfirmPassword = model.ConfirmPassword;
+            existringStudenr.DOB = model.DOB;
+
+            _dbContext.SaveChanges(); // Vari tabanina degisiklikleri kaydediyoruz
 
             // 204 Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
@@ -278,7 +251,7 @@ namespace CollegeApp_2.Controllers
             if (patchDocument == null || id <= 0)
                 BadRequest();
 
-            var existringStudenr = CollegeRepository.Students.Where(s => s.Id == id).FirstOrDefault();
+            var existringStudenr = _dbContext.Students.Where(s => s.Id == id).FirstOrDefault();
 
             if (existringStudenr == null)
                 return NotFound();
@@ -289,10 +262,7 @@ namespace CollegeApp_2.Controllers
                 StudentName = existringStudenr.StudentName,
                 Adres = existringStudenr.Adres,
                 Email = existringStudenr.Email,
-                Age = existringStudenr.Age,
-                AdmissionDate = existringStudenr.AdmissionDate,
-                Password = existringStudenr.Password,
-                ConfirmPassword = existringStudenr.ConfirmPassword
+                DOB = existringStudenr.DOB,
 
             };
 
@@ -305,10 +275,9 @@ namespace CollegeApp_2.Controllers
             existringStudenr.StudentName = studentDTO.StudentName;
             existringStudenr.Email = studentDTO.Email;
             existringStudenr.Adres = studentDTO.Adres;
-            existringStudenr.Age = studentDTO.Age;
-            existringStudenr.AdmissionDate = studentDTO.AdmissionDate;
-            existringStudenr.Password = studentDTO.Password;
-            existringStudenr.ConfirmPassword = studentDTO.ConfirmPassword;
+            existringStudenr.DOB = studentDTO.DOB;
+
+            _dbContext.SaveChanges(); // Vari tabanina degisiklikleri kaydediyoruz
 
             // 204 - NoContent Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
@@ -328,13 +297,15 @@ namespace CollegeApp_2.Controllers
                 return BadRequest();
 
 
-            var student = CollegeRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+            var student = _dbContext.Students.Where(n => n.Id == id).FirstOrDefault();
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
                 return NotFound($"The Student id {id} not fount ");
 
-            CollegeRepository.Students.Remove(student);
+            _dbContext.Students.Remove(student);
+
+            _dbContext.SaveChanges(); // Vari tabanina degisiklikleri kaydediyoruz
 
             // Ok - 200 - Success
             return Ok(true);

@@ -9,7 +9,7 @@ namespace CollegeApp_2.Data
         {
                 
         }
-        DbSet<Student> Students { get; set; }
+       public DbSet<Student> Students { get; set; }
 
 
        
