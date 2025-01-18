@@ -11,9 +11,11 @@ namespace CollegeApp_2.Data
         DbSet<Student> Students { get; set; }
 
 
-        // Vari tabanina elle veri ekleme;
+       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Vari tabanina elle veri ekleme;
+
             modelBuilder.Entity<Student>().HasData(new List<Student>
             {
                 new Student
@@ -35,6 +37,17 @@ namespace CollegeApp_2.Data
                     DOB = new DateTime(2022,06,12)
 
                 }
+            });
+
+
+            // Student sinifini ozellestirelim ;
+
+            modelBuilder.Entity<Student>(entity =>
+            {
+                entity.Property(n => n.StudentName).IsRequired();   // StudentName gereklidir.
+                entity.Property(n =>n.Email).HasMaxLength(250);     // Maxsimim 250 karakter.
+                entity.Property(n => n.Adres).IsRequired(false).HasMaxLength(500);    // Adres istege bagli.Maksimum 500 karakter.
+                entity.Property(n => n.Email).IsRequired().HasMaxLength(250);         // Email gereklidir.Maksimum 250 karakter.
             });
         }
     }
