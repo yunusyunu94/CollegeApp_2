@@ -5,8 +5,8 @@ namespace CollegeApp_2.Data
 {
     public class Student
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key] StudentConfigda tanimladik
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]  StudentConfigda tanimladik
         public int Id { get; set; }
         public string StudentName { get; set; }
         public string Email { get; set; }
