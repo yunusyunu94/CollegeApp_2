@@ -1,0 +1,11 @@
+Nugetten şu paketleri yükle ;
+
+AutoMapper
+AutoMapper.Extensions.Microsoft.DependencyInjection
+
+
+videosu ;
+https://www.youtube.com/watch?v=t6DciFNrwDg&list=PL3ewn8T-zRWgO-GAdXjVRh-6thRog6ddg&index=48&ab_channel=NehanthWorld
+
+
+https://docs.automapper.org/en/v12.0.1/Configuration.html
