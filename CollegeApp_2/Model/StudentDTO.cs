@@ -9,10 +9,10 @@ namespace CollegeApp_2.Model
         //[ValidateNever]                 // Dogrulanmasini istemedigimiz alanlar icin kullanilir
         public int Id { get; set; }
 
-        [Required]
+        //[Required]
         public string StudentName { get; set; }
 
-        [EmailAddress]
+        //[EmailAddress]
         public string Email { get; set; }
 
         //[Range(10,20)]                  // 10 ile 20 arasinda olmalidir
@@ -22,7 +22,7 @@ namespace CollegeApp_2.Model
         //public DateTime AdmissionDate { get; set; } // ogrenci kabul tarihi
         //// StudentController de DateTime kontrolunu CreateStudent Actionda sagladik
 
-        [Required]
+        //[Required]
         public string Adres { get; set; }
 
         public DateTime DOB { get; set; }
