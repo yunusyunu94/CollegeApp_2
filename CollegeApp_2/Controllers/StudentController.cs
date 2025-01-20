@@ -33,7 +33,7 @@ namespace CollegeApp_2.Controllers
         [Route("All", Name = "GetStudents")]                        // Name Routenin adi
         [ProducesResponseType(StatusCodes.Status200OK)]            // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult<IEnumerable<StudentDTO>> GetStudents()
+        public async Task<ActionResult<IEnumerable<StudentDTO>>> GetStudents()
         {
 
 
@@ -42,14 +42,15 @@ namespace CollegeApp_2.Controllers
 
 
 
-            var students = _dbContext.Students.Select(s => new StudentDTO()
+            var students = await _dbContext.Students.Select(s => new StudentDTO()
             {
                 Id = s.Id,
                 StudentName = s.StudentName,
                 Adres = s.Adres,
                 Email = s.Email,
                 DOB = s.DOB,
-            }).ToList();
+
+            }).ToListAsync();
 
             // Ok - 200 - Success
             return Ok(students);
@@ -62,7 +63,7 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult<Student> GetStudentsById(int id)
+        public async Task<ActionResult<Student>> GetStudentsByIdAsync(int id)
         {
 
             // ----------------------------------------------- LGGER ;
@@ -75,7 +76,7 @@ namespace CollegeApp_2.Controllers
             }
 
 
-            var student = _dbContext.Students.Where(n => n.Id == id).FirstOrDefault();
+            var student = await _dbContext.Students.Where(n => n.Id == id).FirstOrDefaultAsync();
 
             // ----------------------------------------------  LGGER ;
             // NotFound - 404 - NotFound - Ciend Error
@@ -93,7 +94,7 @@ namespace CollegeApp_2.Controllers
                 StudentName = student.StudentName,
                 Adres = student.Adres,
                 Email = student.Email,
-                DOB= student.DOB,
+                DOB = student.DOB,
             };
 
 
@@ -107,14 +108,14 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult<Student> GetStudentsByName(string name)
+        public async Task<ActionResult<Student>> GetStudentsByNameAsync(string name)
         {
             // BadRequest - 400 - BadRequest - Ciend Error
             if (string.IsNullOrEmpty(name))
                 return BadRequest();
 
 
-            var student = _dbContext.Students.Where(n => n.StudentName == name).FirstOrDefault();
+            var student = await _dbContext.Students.Where(n => n.StudentName == name).FirstOrDefaultAsync();
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
@@ -143,7 +144,7 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult<StudentDTO> CreateStudent([FromBody] StudentDTO model)
+        public async Task <ActionResult<StudentDTO>> CreateStudentAsync([FromBody] StudentDTO model)
         {
             //--------------------------------------------------------------------------------------------------------------------------
 
@@ -191,12 +192,12 @@ namespace CollegeApp_2.Controllers
                 StudentName = model.StudentName,
                 Adres = model.Adres,
                 Email = model.Email,
-                DOB=model.DOB,
+                DOB = model.DOB,
             };
 
-            _dbContext.Students.Add(student);
+            await _dbContext.Students.AddAsync(student);
 
-            _dbContext.SaveChanges(); // Vari tabanina degisiklikleri kaydediyoruz
+            await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz
 
             // Status - 201
             // http://localhost:5164/api/Student/3
@@ -212,12 +213,12 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult UpdateStudent([FromBody] StudentDTO model)
+        public async Task <ActionResult> UpdateStudentAsync([FromBody] StudentDTO model)
         {
             if (model == null || model.Id <= 0)
                 BadRequest();
 
-            var existringStudenr = _dbContext.Students.Where(s => s.Id == model.Id).FirstOrDefault();
+            var existringStudenr = await _dbContext.Students.Where(s => s.Id == model.Id).FirstOrDefaultAsync();
 
             if (existringStudenr == null)
                 return NotFound();
@@ -226,8 +227,9 @@ namespace CollegeApp_2.Controllers
             existringStudenr.Email = model.Email;
             existringStudenr.Adres = model.Adres;
             existringStudenr.DOB = model.DOB;
+            //existringStudenr.DOB = Convert.ToDateTime(model.DOB);
 
-            _dbContext.SaveChanges(); // Vari tabanina degisiklikleri kaydediyoruz
+            await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz
 
             // 204 Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
@@ -246,12 +248,12 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult UpdateStudentPartial(int id, [FromBody] JsonPatchDocument<StudentDTO> patchDocument)
+        public async Task <ActionResult> UpdateStudentPartialAsync(int id, [FromBody] JsonPatchDocument<StudentDTO> patchDocument)
         {
             if (patchDocument == null || id <= 0)
                 BadRequest();
 
-            var existringStudenr = _dbContext.Students.Where(s => s.Id == id).FirstOrDefault();
+            var existringStudenr = await _dbContext.Students.Where(s => s.Id == id).FirstOrDefaultAsync();
 
             if (existringStudenr == null)
                 return NotFound();
@@ -277,7 +279,7 @@ namespace CollegeApp_2.Controllers
             existringStudenr.Adres = studentDTO.Adres;
             existringStudenr.DOB = studentDTO.DOB;
 
-            _dbContext.SaveChanges(); // Vari tabanina degisiklikleri kaydediyoruz
+            await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz
 
             // 204 - NoContent Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
