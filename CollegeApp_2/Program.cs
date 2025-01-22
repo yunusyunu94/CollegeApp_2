@@ -52,6 +52,10 @@ builder.Logging.AddLog4Net();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
+// VEYA
+
+// builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());  Bu butun esemlileri getirir
+
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
