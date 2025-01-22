@@ -5,7 +5,7 @@ using CollegeApp_2.Model;
 namespace CollegeApp_2.Configurations
 {
 
-    // Nugetten yukleyecegimiz kutuphaneler ; " AutoMapper "  VE  " AutoMapper.Extensions.Microsoft.DependencyInjection "
+    // Nugetten yukleyecegimiz kutuphane ; " AutoMapper " 
     // AutoMapper icin " Profile " den miras almaliyiz
     public class AutoMapperConfig : Profile
     {
