@@ -1,4 +1,5 @@
-﻿using CollegeApp_2.Data;
+﻿using AutoMapper;
+using CollegeApp_2.Data;
 using CollegeApp_2.Model;
 using CollegeApp_2.Mylogging;
 using Microsoft.AspNetCore.Http;
@@ -19,11 +20,13 @@ namespace CollegeApp_2.Controllers
         // LOGGER ; Kullanilabilir kaydedici yapalim ;
         private readonly ILogger<StudentController> _logger;
         private readonly CollegeDBContext _dbContext;
+        private readonly IMapper _mapper; //  AutoMapper 
 
-        public StudentController(ILogger<StudentController> logger, CollegeDBContext dBContext)
+        public StudentController(ILogger<StudentController> logger, CollegeDBContext dBContext, IMapper mapper)
         {
             _logger = logger;
             _dbContext = dBContext;
+            _mapper = mapper;
         }
 
 
@@ -41,19 +44,14 @@ namespace CollegeApp_2.Controllers
             _logger.LogInformation("GetSudents method started");
 
 
+            var students = await _dbContext.Students.ToListAsync();
 
-            var students = await _dbContext.Students.Select(s => new StudentDTO()
-            {
-                Id = s.Id,
-                StudentName = s.StudentName,
-                Adres = s.Adres,
-                Email = s.Email,
-                DOB = s.DOB,
 
-            }).ToListAsync();
+            //  AutoMapper ;
+            var studentDTOData = _mapper.Map<List<StudentDTO>>(students);
 
             // Ok - 200 - Success
-            return Ok(students);
+            return Ok(studentDTOData);
 
         }
 
@@ -87,15 +85,8 @@ namespace CollegeApp_2.Controllers
                 return NotFound($"The Student id {id} not fount ");
             }
 
-
-            var studentDTO = new StudentDTO()
-            {
-                Id = student.Id,
-                StudentName = student.StudentName,
-                Adres = student.Adres,
-                Email = student.Email,
-                DOB = student.DOB,
-            };
+            //  AutoMapper ;
+            var studentDTO = _mapper.Map<StudentDTO>(student);
 
 
             // Ok - 200 - Success
@@ -121,16 +112,9 @@ namespace CollegeApp_2.Controllers
             if (student == null)
                 return NotFound($"The Student id {name} not fount ");
 
-            var studentDTO = new StudentDTO()
-            {
 
-                Id = student.Id,
-                StudentName = student.StudentName,
-                Adres = student.Adres,
-                Email = student.Email,
-                DOB = student.DOB,
-            };
-
+            //  AutoMapper ;
+            var studentDTO = _mapper.Map<StudentDTO>(student);
 
             // Ok - 200 - Success
             return Ok(studentDTO);
@@ -144,7 +128,7 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public async Task <ActionResult<StudentDTO>> CreateStudentAsync([FromBody] StudentDTO model)
+        public async Task <ActionResult<StudentDTO>> CreateStudentAsync([FromBody] StudentDTO dto)
         {
             //--------------------------------------------------------------------------------------------------------------------------
 
@@ -183,27 +167,23 @@ namespace CollegeApp_2.Controllers
 
 
 
-            if (model == null)
+            if (dto == null)
                 return BadRequest();
 
-
-            Student student = new Student()
-            {
-                StudentName = model.StudentName,
-                Adres = model.Adres,
-                Email = model.Email,
-                DOB = model.DOB,
-            };
+            //  AutoMapper ;
+            Student student = _mapper.Map<Student>(dto);
 
             await _dbContext.Students.AddAsync(student);
 
-            await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz
+            await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz 
+
+            dto.Id = student.Id;
 
             // Status - 201
             // http://localhost:5164/api/Student/3
             // New student details
-            return CreatedAtRoute("GetStudentsById", new { id = model.Id }, model); // Yeni olusturulan kayit  icin baglantiyi hazirlayacak
-            return Ok(model);
+            return CreatedAtRoute("GetStudentsById", new { id = dto.Id }, dto); // Yeni olusturulan kayit  icin baglantiyi hazirlayacak
+            
         }
 
 
@@ -213,20 +193,24 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public async Task <ActionResult> UpdateStudentAsync([FromBody] StudentDTO model)
+        public async Task <ActionResult> UpdateStudentAsync([FromBody] StudentDTO dto)
         {
-            if (model == null || model.Id <= 0)
+            if (dto == null || dto.Id <= 0)
                 BadRequest();
 
-            var existringStudenr = await _dbContext.Students.Where(s => s.Id == model.Id).FirstOrDefaultAsync();
+            var existringStudenr = await _dbContext.Students.Where(s => s.Id == dto.Id).FirstOrDefaultAsync();
 
             if (existringStudenr == null)
                 return NotFound();
 
-            existringStudenr.StudentName = model.StudentName;
-            existringStudenr.Email = model.Email;
-            existringStudenr.Adres = model.Adres;
-            existringStudenr.DOB = model.DOB;
+
+            //  AutoMapper ;
+            var newRecort = _mapper.Map<Student>(dto);
+
+            //existringStudenr.StudentName = model.StudentName;
+            //existringStudenr.Email = model.Email;
+            //existringStudenr.Adres = model.Adres;
+            //existringStudenr.DOB = model.DOB;
             //existringStudenr.DOB = Convert.ToDateTime(model.DOB);
 
             await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz
@@ -253,31 +237,29 @@ namespace CollegeApp_2.Controllers
             if (patchDocument == null || id <= 0)
                 BadRequest();
 
-            var existringStudenr = await _dbContext.Students.Where(s => s.Id == id).FirstOrDefaultAsync();
+            var existringStudenr = await _dbContext.Students.AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
 
             if (existringStudenr == null)
                 return NotFound();
 
-            var studentDTO = new StudentDTO
-            {
-                Id = existringStudenr.Id,
-                StudentName = existringStudenr.StudentName,
-                Adres = existringStudenr.Adres,
-                Email = existringStudenr.Email,
-                DOB = existringStudenr.DOB,
 
-            };
+            //  AutoMapper ;
+            var studentDTO = _mapper.Map<StudentDTO>(existringStudenr);
 
+            
             patchDocument.ApplyTo(studentDTO, ModelState); // ogrenci DTO suna uygulatiyoruz. Birseyler ters giderse ModelState ogrenicez
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            existringStudenr = _mapper.Map<Student>(studentDTO);
 
-            existringStudenr.StudentName = studentDTO.StudentName;
-            existringStudenr.Email = studentDTO.Email;
-            existringStudenr.Adres = studentDTO.Adres;
-            existringStudenr.DOB = studentDTO.DOB;
+            _dbContext.Students.Update(existringStudenr);
+
+            //existringStudenr.StudentName = studentDTO.StudentName;
+            //existringStudenr.Email = studentDTO.Email;
+            //existringStudenr.Adres = studentDTO.Adres;
+            //existringStudenr.DOB = studentDTO.DOB;
 
             await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz
 
