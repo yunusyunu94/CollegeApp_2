@@ -16,9 +16,24 @@ namespace CollegeApp_2.Configurations
 
             // VEA
 
-            CreateMap<Student, StudentDTO>().ReverseMap();  // Yukaridaki 2 kodla ayni kisaltmasi
+            // CreateMap<Student, StudentDTO>().ReverseMap();  // Yukaridaki 2 kodla ayni kisaltmasi
 
             // Daha sonra Program.cs 
+
+            // DTO ile normal sinif arasinda isim farklilik var ise NULL doner bunun icin StudentDTO da StudentName yi Name yaptik Student sinifinda StudentName olarak yazdik
+            // OtoMapperde yapmak icin ;
+            CreateMap<StudentDTO, Student>().ForMember(n => n.StudentName, opt => opt.MapFrom(x => x.Name )).ReverseMap();
+
+
+
+            // Eger herhangi bir eslesmeyi yoksaymak istiyorsak ;
+            CreateMap<StudentDTO, Student>().ReverseMap().ForMember(n => n.Name, opt => opt.Ignore()); // Burada StudentNamei yoksayacak ve eslestirme yapmayacaktir.
+
+
+
+            // Eger bir  degeri NULL donuyorsan NULL yerine anlamli birsey yazabiliriz bunun icin ;
+            CreateMap<StudentDTO, Student>().ReverseMap().AddTransform<string>(n => string.IsNullOrEmpty(n) ? "No address fount " : n);
+
         }
     }
 }
