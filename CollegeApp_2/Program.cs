@@ -110,9 +110,16 @@ builder.Services.AddSingleton<IMyLogger, LogToFile>();  // Her ayri istege ( reg
 
 // -------------------------  IStudentsRepository  -------------------
 
-builder.Services.AddTransient<IStudentsRepository, StudentsRepository>();
+builder.Services.AddScoped<IStudentsRepository, StudentsRepository>();
 
 
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// -------------------------  ICollageRepository  -------------------
+
+builder.Services.AddScoped(typeof(ICollageRepository<>), typeof(CollageRepository<>));
 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
