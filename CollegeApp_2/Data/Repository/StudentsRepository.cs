@@ -17,15 +17,18 @@ namespace CollegeApp_2.Data.Repository
         }
 
 
-        public async Task<Student> GetByIdAsync(int id)
+        public async Task<Student> GetByIdAsync(int id,bool useNoTracking = false)
         {
-            return await _dbContext.Students.Where(Student => Student.Id == id).FirstOrDefaultAsync();
+            if (useNoTracking)
+            return await _dbContext.Students.AsNoTracking().Where(student => student.Id == id).FirstOrDefaultAsync();
+            else 
+                return await _dbContext.Students.Where(student => student.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<Student> GetByNameAsync(string name)
         {
-            return await _dbContext.Students.Where(Student => Student.StudentName.ToLower().Equals(name.ToLower())).FirstOrDefaultAsync();
-            // Buyuktur/Kucuktur harflere duyarli olsun
+            return await _dbContext.Students.Where(Student => Student.StudentName.ToLower().Contains(name.ToLower())).FirstOrDefaultAsync();
+            // Buyuktur/Kucuktur harflere duyarli olsun, Equals esittire icin biz Contains yapicaz yani icerir dicez
         }
 
 
@@ -41,29 +44,17 @@ namespace CollegeApp_2.Data.Repository
 
         public async Task <int> UpdateAsync(Student student)
         {
-            var studentToUpdate = await _dbContext.Students.Where(student => student.Id == student.Id).FirstOrDefaultAsync();
-
-            if (studentToUpdate == null)
-                throw new ArgumentException($"No student fount with id: {student.Id}");
-
-            studentToUpdate.StudentName = student.StudentName;
-            studentToUpdate.Email = student.Email;
-            studentToUpdate.Adres = student.Adres;
-            studentToUpdate.DOB = student.DOB;
+            _dbContext.Update(student);
 
             await _dbContext.SaveChangesAsync();
             return student.Id;
         
         }
 
-        public async Task <bool> DeleteAsync(int id)
+        public async Task <bool> DeleteAsync(Student student)
         {
-            var studentToDelete = await _dbContext.Students.Where(student => student.Id == student.Id).FirstOrDefaultAsync();
 
-            if (studentToDelete == null)
-                throw new ArgumentException($"No student fount with id: {id}");
-
-            _dbContext.Students.Remove(studentToDelete);
+            _dbContext.Students.Remove(student);
             await _dbContext.SaveChangesAsync();
 
             return true;

@@ -1,6 +1,7 @@
 using System;
 using CollegeApp_2.Configurations;
 using CollegeApp_2.Data;
+using CollegeApp_2.Data.Repository;
 using CollegeApp_2.Mylogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,6 +107,15 @@ builder.Services.AddSingleton<IMyLogger, LogToFile>();  // Her ayri istege ( reg
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+// -------------------------  IStudentsRepository  -------------------
+
+builder.Services.AddTransient<IStudentsRepository, StudentsRepository>();
+
+
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 // ----------------------------------------- Logger ------------------------------------------------------------------
