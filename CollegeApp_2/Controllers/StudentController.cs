@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
 using CollegeApp_2.Data;
+using CollegeApp_2.Data.Repository;
 using CollegeApp_2.Model;
-using CollegeApp_2.Mylogging;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
 
 namespace CollegeApp_2.Controllers
 {
@@ -21,15 +17,19 @@ namespace CollegeApp_2.Controllers
         private readonly ILogger<StudentController> _logger;
 
         // private readonly CollegeDBContext _dbContext; // Veritabanini artik StudentsRepositoryde kullaniyoruz
+        private readonly IStudentsRepository _studentsRepository;
 
         private readonly IMapper _mapper; //  AutoMapper 
 
-        public StudentController(ILogger<StudentController> logger,  IMapper mapper)
+        public StudentController(ILogger<StudentController> logger,  IMapper mapper, IStudentsRepository studentsRepository)
         {
             _logger = logger;
 
             //_dbContext = dBContext;
+            _studentsRepository = studentsRepository;
+
             _mapper = mapper;
+            
         }
 
 
@@ -47,7 +47,7 @@ namespace CollegeApp_2.Controllers
             _logger.LogInformation("GetSudents method started");
 
 
-            var students = await _dbContext.Students.ToListAsync();
+            var students = await _studentsRepository.GetAllAsync();
 
 
             //  AutoMapper ;
@@ -77,7 +77,7 @@ namespace CollegeApp_2.Controllers
             }
 
 
-            var student = await _dbContext.Students.Where(n => n.Id == id).FirstOrDefaultAsync();
+            var student = await _studentsRepository.GetByIdAsync(id);
 
             // ----------------------------------------------  LGGER ;
             // NotFound - 404 - NotFound - Ciend Error
@@ -109,7 +109,7 @@ namespace CollegeApp_2.Controllers
                 return BadRequest();
 
 
-            var student = await _dbContext.Students.Where(n => n.StudentName == name).FirstOrDefaultAsync();
+            var student = await _studentsRepository.GetByNameAsync(name);
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
@@ -176,11 +176,9 @@ namespace CollegeApp_2.Controllers
             //  AutoMapper ;
             Student student = _mapper.Map<Student>(dto);
 
-            await _dbContext.Students.AddAsync(student);
+            var id = await _studentsRepository.CreateAsync(student);
 
-            await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz 
-
-            dto.Id = student.Id;
+            dto.Id = id;
 
             // Status - 201
             // http://localhost:5164/api/Student/3
@@ -201,22 +199,17 @@ namespace CollegeApp_2.Controllers
             if (dto == null || dto.Id <= 0)
                 BadRequest();
 
-            var existringStudenr = await _dbContext.Students.Where(s => s.Id == dto.Id).FirstOrDefaultAsync();
+            var existringStudenr = await _studentsRepository.GetByIdAsync(dto.Id,true);
+
 
             if (existringStudenr == null)
                 return NotFound();
-
-
+            
+            
             //  AutoMapper ;
             var newRecort = _mapper.Map<Student>(dto);
 
-            //existringStudenr.StudentName = model.StudentName;
-            //existringStudenr.Email = model.Email;
-            //existringStudenr.Adres = model.Adres;
-            //existringStudenr.DOB = model.DOB;
-            //existringStudenr.DOB = Convert.ToDateTime(model.DOB);
-
-            await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz
+            await _studentsRepository.UpdateAsync(newRecort);
 
             // 204 Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
@@ -240,7 +233,7 @@ namespace CollegeApp_2.Controllers
             if (patchDocument == null || id <= 0)
                 BadRequest();
 
-            var existringStudenr = await _dbContext.Students.AsNoTracking().Where(s => s.Id == id).FirstOrDefaultAsync();
+            var existringStudenr = await _studentsRepository.GetByIdAsync(id, true);
 
             if (existringStudenr == null)
                 return NotFound();
@@ -257,14 +250,8 @@ namespace CollegeApp_2.Controllers
 
             existringStudenr = _mapper.Map<Student>(studentDTO);
 
-            _dbContext.Students.Update(existringStudenr);
+            await _studentsRepository.UpdateAsync(existringStudenr);
 
-            //existringStudenr.StudentName = studentDTO.StudentName;
-            //existringStudenr.Email = studentDTO.Email;
-            //existringStudenr.Adres = studentDTO.Adres;
-            //existringStudenr.DOB = studentDTO.DOB;
-
-            await _dbContext.SaveChangesAsync(); // Vari tabanina degisiklikleri kaydediyoruz
 
             // 204 - NoContent Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
@@ -277,22 +264,20 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public ActionResult<bool> DeleteStudent(int id)
+        public async Task <ActionResult<bool>> DeleteStudent(int id)
         {
             // BadRequest - 400 - BadRequest - Ciend Error
             if (id <= 0)
                 return BadRequest();
 
 
-            var student = _dbContext.Students.Where(n => n.Id == id).FirstOrDefault();
+            var student = await _studentsRepository.GetByIdAsync(id);
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
                 return NotFound($"The Student id {id} not fount ");
 
-            _dbContext.Students.Remove(student);
-
-            _dbContext.SaveChanges(); // Vari tabanina degisiklikleri kaydediyoruz
+            await _studentsRepository.DeleteAsync(student);
 
             // Ok - 200 - Success
             return Ok(true);
