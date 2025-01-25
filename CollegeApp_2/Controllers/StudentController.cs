@@ -19,13 +19,16 @@ namespace CollegeApp_2.Controllers
 
         // LOGGER ; Kullanilabilir kaydedici yapalim ;
         private readonly ILogger<StudentController> _logger;
-        private readonly CollegeDBContext _dbContext;
+
+        // private readonly CollegeDBContext _dbContext; // Veritabanini artik StudentsRepositoryde kullaniyoruz
+
         private readonly IMapper _mapper; //  AutoMapper 
 
-        public StudentController(ILogger<StudentController> logger, CollegeDBContext dBContext, IMapper mapper)
+        public StudentController(ILogger<StudentController> logger,  IMapper mapper)
         {
             _logger = logger;
-            _dbContext = dBContext;
+
+            //_dbContext = dBContext;
             _mapper = mapper;
         }
 
