@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using CollegeApp_2.Data;
 using CollegeApp_2.Data.Repository;
 using CollegeApp_2.Model;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace CollegeApp_2.Controllers
 {
@@ -16,17 +18,19 @@ namespace CollegeApp_2.Controllers
         // LOGGER ; Kullanilabilir kaydedici yapalim ;
         private readonly ILogger<StudentController> _logger;
 
-        // private readonly CollegeDBContext _dbContext; // Veritabanini artik StudentsRepositoryde kullaniyoruz
-        private readonly IStudentsRepository _studentsRepository;
+        // private readonly CollegeDBContext _dbContext; // Veritabanini artik CollageRepository kullaniyoruz
+
+        // private readonly IStudentsRepository _studentsRepository;  // Bunun depo yerine CollageRepository tum depolar icin ortak olusturduk asssagidakini uygulucaz ;
+        private readonly ICollageRepository<Student> _studentRepository;
 
         private readonly IMapper _mapper; //  AutoMapper 
 
-        public StudentController(ILogger<StudentController> logger,  IMapper mapper, IStudentsRepository studentsRepository)
+        public StudentController(ILogger<StudentController> logger,  IMapper mapper, IStudentsRepository studentsRepository, ICollageRepository<Student> studentRepository)
         {
             _logger = logger;
 
             //_dbContext = dBContext;
-            _studentsRepository = studentsRepository;
+            _studentRepository = studentRepository;
 
             _mapper = mapper;
             
@@ -47,7 +51,7 @@ namespace CollegeApp_2.Controllers
             _logger.LogInformation("GetSudents method started");
 
 
-            var students = await _studentsRepository.GetAllAsync();
+            var students = await _studentRepository.GetAllAsync();
 
 
             //  AutoMapper ;
@@ -77,7 +81,7 @@ namespace CollegeApp_2.Controllers
             }
 
 
-            var student = await _studentsRepository.GetByIdAsync(id);
+            var student = await _studentRepository.GetByIdAsync(student => student.Id == id);
 
             // ----------------------------------------------  LGGER ;
             // NotFound - 404 - NotFound - Ciend Error
@@ -109,7 +113,7 @@ namespace CollegeApp_2.Controllers
                 return BadRequest();
 
 
-            var student = await _studentsRepository.GetByNameAsync(name);
+            var student = await _studentRepository.GetByNameAsync(student => student.StudentName.ToLower().Contains(name.ToLower())); // Contains kismi eslesme ve ToLower kucuk/buyuk harflere duyarli
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
@@ -176,9 +180,9 @@ namespace CollegeApp_2.Controllers
             //  AutoMapper ;
             Student student = _mapper.Map<Student>(dto);
 
-            var id = await _studentsRepository.CreateAsync(student);
+            var studentAfterCreation = await _studentRepository.CreateAsync(student);
 
-            dto.Id = id;
+            dto.Id = studentAfterCreation.Id;
 
             // Status - 201
             // http://localhost:5164/api/Student/3
@@ -199,7 +203,7 @@ namespace CollegeApp_2.Controllers
             if (dto == null || dto.Id <= 0)
                 BadRequest();
 
-            var existringStudenr = await _studentsRepository.GetByIdAsync(dto.Id,true);
+            var existringStudenr = await _studentRepository.GetByIdAsync(student => student.Id == dto.Id, true);
 
 
             if (existringStudenr == null)
@@ -209,7 +213,7 @@ namespace CollegeApp_2.Controllers
             //  AutoMapper ;
             var newRecort = _mapper.Map<Student>(dto);
 
-            await _studentsRepository.UpdateAsync(newRecort);
+            await _studentRepository.UpdateAsync(newRecort);
 
             // 204 Kodu kayıt olundu icerik yok
             return NoContent(); // Kayit guncellendi ama dondurulecek iceri yok. yukarida Actiona <StudentDTO> yazmamiza gerek yok
@@ -233,7 +237,7 @@ namespace CollegeApp_2.Controllers
             if (patchDocument == null || id <= 0)
                 BadRequest();
 
-            var existringStudenr = await _studentsRepository.GetByIdAsync(id, true);
+            var existringStudenr = await _studentRepository.GetByIdAsync(student => student.Id == id, true);
 
             if (existringStudenr == null)
                 return NotFound();
@@ -250,7 +254,7 @@ namespace CollegeApp_2.Controllers
 
             existringStudenr = _mapper.Map<Student>(studentDTO);
 
-            await _studentsRepository.UpdateAsync(existringStudenr);
+            await _studentRepository.UpdateAsync(existringStudenr);
 
 
             // 204 - NoContent Kodu kayıt olundu icerik yok
@@ -271,13 +275,13 @@ namespace CollegeApp_2.Controllers
                 return BadRequest();
 
 
-            var student = await _studentsRepository.GetByIdAsync(id);
+            var student = await _studentRepository.GetByIdAsync(student => student.Id == id);
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
                 return NotFound($"The Student id {id} not fount ");
 
-            await _studentsRepository.DeleteAsync(student);
+            await _studentRepository.DeleteAsync(student);
 
             // Ok - 200 - Success
             return Ok(true);
