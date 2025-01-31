@@ -38,7 +38,7 @@ namespace CollegeApp_2.Data.Repository
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(Expression<Func<T, bool>> filter, bool useNoTracking = false)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter, bool useNoTracking = false)
         {
             if (useNoTracking)
                // return await _dbSet.AsNoTracking().Where(Student => Student.Id == id).FirstOrDefaultAsync();
@@ -48,13 +48,15 @@ namespace CollegeApp_2.Data.Repository
                  return await _dbSet.Where(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<T> GetByNameAsync(Expression<Func<T, bool>> filter)
-        {
-            // return await _dbSet.Where(Student => Student.StudentName.ToLower().Contains(name.ToLower())).FirstOrDefaultAsync();
-            // Buyuktur/Kucuktur harflere duyarli olsun, Equals esittire icin biz Contains yapicaz yani icerir dicez
 
-            return await _dbSet.Where(filter).FirstOrDefaultAsync();
-        }
+        // ASSAGIDAGİ YONTEMİ KALDİRDİK " GetByIdAsync " AYNİ GOREVİGORUYOR
+        //public async Task<T> GetByNameAsync(Expression<Func<T, bool>> filter)
+        //{
+        //    // return await _dbSet.Where(Student => Student.StudentName.ToLower().Contains(name.ToLower())).FirstOrDefaultAsync();
+        //    // Buyuktur/Kucuktur harflere duyarli olsun, Equals esittire icin biz Contains yapicaz yani icerir dicez
+
+        //    return await _dbSet.Where(filter).FirstOrDefaultAsync();
+        //}
 
         public async Task<T> UpdateAsync(T dbRecord)
         {
