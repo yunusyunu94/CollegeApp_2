@@ -21,11 +21,13 @@ namespace CollegeApp_2.Controllers
         // private readonly CollegeDBContext _dbContext; // Veritabanini artik CollageRepository kullaniyoruz
 
         // private readonly IStudentsRepository _studentsRepository;  // Bunun depo yerine CollageRepository tum depolar icin ortak olusturduk asssagidakini uygulucaz ;
-        private readonly ICollageRepository<Student> _studentRepository;
+        // private readonly ICollageRepository<Student> _studentRepository; // Artik " CollageRepository " ortak depo oldugundan hangi tablonun controllunda calisiyorsak
+                                                                            // ona ozgu depo kullanicaz assagıdaki gibi ;
+        private readonly IStudentsRepository _studentRepository;
 
         private readonly IMapper _mapper; //  AutoMapper 
 
-        public StudentController(ILogger<StudentController> logger,  IMapper mapper, IStudentsRepository studentsRepository, ICollageRepository<Student> studentRepository)
+        public StudentController(ILogger<StudentController> logger, IMapper mapper, IStudentsRepository studentRepository)
         {
             _logger = logger;
 
@@ -33,7 +35,7 @@ namespace CollegeApp_2.Controllers
             _studentRepository = studentRepository;
 
             _mapper = mapper;
-            
+
         }
 
 
@@ -81,7 +83,7 @@ namespace CollegeApp_2.Controllers
             }
 
 
-            var student = await _studentRepository.GetByIdAsync(student => student.Id == id);
+            var student = await _studentRepository.GetAsync(student => student.Id == id);
 
             // ----------------------------------------------  LGGER ;
             // NotFound - 404 - NotFound - Ciend Error
@@ -113,7 +115,7 @@ namespace CollegeApp_2.Controllers
                 return BadRequest();
 
 
-            var student = await _studentRepository.GetByNameAsync(student => student.StudentName.ToLower().Contains(name.ToLower())); // Contains kismi eslesme ve ToLower kucuk/buyuk harflere duyarli
+            var student = await _studentRepository.GetAsync(student => student.StudentName.ToLower().Contains(name.ToLower())); // Contains kismi eslesme ve ToLower kucuk/buyuk harflere duyarli
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
@@ -135,7 +137,7 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public async Task <ActionResult<StudentDTO>> CreateStudentAsync([FromBody] StudentDTO dto)
+        public async Task<ActionResult<StudentDTO>> CreateStudentAsync([FromBody] StudentDTO dto)
         {
             //--------------------------------------------------------------------------------------------------------------------------
 
@@ -188,7 +190,7 @@ namespace CollegeApp_2.Controllers
             // http://localhost:5164/api/Student/3
             // New student details
             return CreatedAtRoute("GetStudentsById", new { id = dto.Id }, dto); // Yeni olusturulan kayit  icin baglantiyi hazirlayacak
-            
+
         }
 
 
@@ -198,18 +200,18 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public async Task <ActionResult> UpdateStudentAsync([FromBody] StudentDTO dto)
+        public async Task<ActionResult> UpdateStudentAsync([FromBody] StudentDTO dto)
         {
             if (dto == null || dto.Id <= 0)
                 BadRequest();
 
-            var existringStudenr = await _studentRepository.GetByIdAsync(student => student.Id == dto.Id, true);
+            var existringStudenr = await _studentRepository.GetAsync(student => student.Id == dto.Id, true);
 
 
             if (existringStudenr == null)
                 return NotFound();
-            
-            
+
+
             //  AutoMapper ;
             var newRecort = _mapper.Map<Student>(dto);
 
@@ -232,12 +234,12 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]        // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public async Task <ActionResult> UpdateStudentPartialAsync(int id, [FromBody] JsonPatchDocument<StudentDTO> patchDocument)
+        public async Task<ActionResult> UpdateStudentPartialAsync(int id, [FromBody] JsonPatchDocument<StudentDTO> patchDocument)
         {
             if (patchDocument == null || id <= 0)
                 BadRequest();
 
-            var existringStudenr = await _studentRepository.GetByIdAsync(student => student.Id == id, true);
+            var existringStudenr = await _studentRepository.GetAsync(student => student.Id == id, true);
 
             if (existringStudenr == null)
                 return NotFound();
@@ -246,7 +248,7 @@ namespace CollegeApp_2.Controllers
             //  AutoMapper ;
             var studentDTO = _mapper.Map<StudentDTO>(existringStudenr);
 
-            
+
             patchDocument.ApplyTo(studentDTO, ModelState); // ogrenci DTO suna uygulatiyoruz. Birseyler ters giderse ModelState ogrenicez
 
             if (!ModelState.IsValid)
@@ -268,14 +270,14 @@ namespace CollegeApp_2.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
-        public async Task <ActionResult<bool>> DeleteStudent(int id)
+        public async Task<ActionResult<bool>> DeleteStudent(int id)
         {
             // BadRequest - 400 - BadRequest - Ciend Error
             if (id <= 0)
                 return BadRequest();
 
 
-            var student = await _studentRepository.GetByIdAsync(student => student.Id == id);
+            var student = await _studentRepository.GetAsync(student => student.Id == id);
 
             // NotFound - 404 - NotFound - Ciend Error
             if (student == null)
