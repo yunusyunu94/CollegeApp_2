@@ -12,5 +12,8 @@ namespace CollegeApp_2.Data
         public string Email { get; set; }
         public string Adres { get; set; }
         public DateTime DOB { get; set; }
+
+        public int? DepartmentId { get; set; }
+        public virtual Department? Department { get; set; } // İliskiyi kurunca konfig sinifina git
     }
 }

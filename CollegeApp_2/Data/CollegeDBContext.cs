@@ -10,6 +10,7 @@ namespace CollegeApp_2.Data
                 
         }
        public DbSet<Student> Students { get; set; }
+       public DbSet<Department> Departments { get; set; }
 
 
        
@@ -17,9 +18,10 @@ namespace CollegeApp_2.Data
         {
             // Tablo 1
             modelBuilder.ApplyConfiguration(new StudentConfig()); // StudentConfig sinifini burda tanimliyoruz.Her tablo icin ayri ayri tanimliyoruz
+            modelBuilder.ApplyConfiguration(new DepartmentConfig()); // Department sinifini burda tanimliyoruz.Her tablo icin ayri ayri tanimliyoruz
 
 
-           
+
         }
     }
 }
