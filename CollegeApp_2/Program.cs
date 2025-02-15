@@ -143,6 +143,26 @@ builder.Services.AddScoped(typeof(ICollageRepository<>), typeof(CollageRepositor
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+// ----------------------------------------- Enabling CORS ------------------------------------------------------------------
+
+// https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-9.0 Sitesinden ; " CORS with named policy and middleware " 
+
+builder.Services.AddCors(options => options.AddPolicy("MyTestCors",
+                      policy =>
+                      {
+                          // Allow all orgins(Tum kokenlere izin verdik)
+                          policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); // AllowAnyOrigin  ; Herhen gibir kokene izin ver.
+                                                                                     // AllowAnyHeader  ; Herhen gibir basliga izin ver.
+                                                                                     // AllowAnyMethod  ; Herhen gibir yonteme izin ver. Yontemler ; GET,POST,PUT,DELETE
+
+                          // Allow only few orgins(Yalniz bir kac kokene izin verdik)
+                          policy.WithOrigins("http://localhost:5164");
+                      }));
+
+// Assagida CORS'u etkinlestirmek gerekir.
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -159,6 +179,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ----------------------------------------- Enabling CORS ------------------------------------------------------------------
+
+// CORS'u etkinlestirmek icin ;
+app.UseCors("MyTestCors");
+
+// NOT !!! ; UseAuthorization dan once yapmamiz gerekiyor.
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 app.UseAuthorization();
 
