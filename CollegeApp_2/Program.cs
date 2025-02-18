@@ -197,7 +197,7 @@ builder.Services.AddCors(options =>
 
     options.AddPolicy("AllowOnlyMicrosoft", policy =>
     {
-        policy.WithOrigins("http://outlook.com,http://microsoft.com,http://onedrive.google.com").AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins("http://outlook.com","http://microsoft.com","http://onedrive.google.com").AllowAnyHeader().AllowAnyMethod();
 
     });
 
