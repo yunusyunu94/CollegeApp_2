@@ -191,7 +191,7 @@ builder.Services.AddCors(options =>
 
     options.AddPolicy("AllowOnlyGoogle", policy =>
     {
-        policy.WithOrigins("http://google.com,http://gmail.com,http://drive.google.com").AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins("http://google.com","http://gmail.com","http://drive.google.com").AllowAnyHeader().AllowAnyMethod();
 
     });
 
