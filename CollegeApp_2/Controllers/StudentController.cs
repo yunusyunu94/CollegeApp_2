@@ -3,6 +3,7 @@ using AutoMapper;
 using CollegeApp_2.Data;
 using CollegeApp_2.Data.Repository;
 using CollegeApp_2.Model;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -11,6 +12,8 @@ namespace CollegeApp_2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors(policyName: "AllowOnlyLocalhost")]  // Program.cs de tanimladigimiz CORS yontemlerinden hangisini kullanicaksak controllere bu sekilde uyguluyoruz
+
     public class StudentController : ControllerBase
     {
 

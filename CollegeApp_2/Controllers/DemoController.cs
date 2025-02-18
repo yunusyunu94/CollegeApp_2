@@ -1,4 +1,5 @@
 ﻿using CollegeApp_2.Mylogging;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +7,7 @@ namespace CollegeApp_2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors(policyName: "AllowOnlyGoogle")]  // Program.cs de tanimladigimiz CORS yontemlerinden hangisini kullanicaksak controllere bu sekilde uyguluyoruz
     public class DemoController : ControllerBase
     {
         /// -------------------- 1. Strongly coumpled/Tightlt coumpled -------------------

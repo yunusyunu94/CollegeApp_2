@@ -147,17 +147,61 @@ builder.Services.AddScoped(typeof(ICollageRepository<>), typeof(CollageRepositor
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-9.0 Sitesinden ; " CORS with named policy and middleware " 
 
-builder.Services.AddCors(options => options.AddPolicy("MyTestCors",
-                      policy =>
+// builder.Services.AddCors(options => options.AddPolicy("MyTestCors",
+//                      policy =>
+//                      {
+//                          // Allow all orgins(Tum kokenlere izin verdik)
+//                          policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); // AllowAnyOrigin  ; Herhen gibir kokene izin ver.
+//                                                                                     // AllowAnyHeader  ; Herhen gibir basliga izin ver.
+//                                                                                     // AllowAnyMethod  ; Herhen gibir yonteme izin ver. Yontemler ; GET,POST,PUT,DELETE
+
+//                          // Allow only few orgins(Yalniz bir kac kokene izin verdik)
+//                          policy.WithOrigins("http://localhost:5164");
+//                      }));
+
+
+
+// Birden fazla politika tanimlamak icin ;
+
+builder.Services.AddCors(options =>
+{
+
+    // DEFAULT olarak ;
+
+    // options.AddDefaultPolicy(policy =>
+    // {
+    //    // Allow all orgins(Tum kokenlere izin verdik)
+    //    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+
+    // });
+
+
+    options.AddPolicy("AllowAll", policy =>
                       {
                           // Allow all orgins(Tum kokenlere izin verdik)
-                          policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); // AllowAnyOrigin  ; Herhen gibir kokene izin ver.
-                                                                                     // AllowAnyHeader  ; Herhen gibir basliga izin ver.
-                                                                                     // AllowAnyMethod  ; Herhen gibir yonteme izin ver. Yontemler ; GET,POST,PUT,DELETE
+                          policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
 
-                          // Allow only few orgins(Yalniz bir kac kokene izin verdik)
-                          policy.WithOrigins("http://localhost:5164");
-                      }));
+                      });
+
+    options.AddPolicy("AllowOnlyLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:5164").AllowAnyHeader().AllowAnyMethod();
+
+    });
+
+    options.AddPolicy("AllowOnlyGoogle", policy =>
+    {
+        policy.WithOrigins("http://google.com,http://gmail.com,http://drive.google.com").AllowAnyHeader().AllowAnyMethod();
+
+    });
+
+    options.AddPolicy("AllowOnlyMicrosoft", policy =>
+    {
+        policy.WithOrigins("http://outlook.com,http://microsoft.com,http://onedrive.google.com").AllowAnyHeader().AllowAnyMethod();
+
+    });
+
+});
 
 // Assagida CORS'u etkinlestirmek gerekir.
 
@@ -183,7 +227,10 @@ app.UseHttpsRedirection();
 // ----------------------------------------- Enabling CORS ------------------------------------------------------------------
 
 // CORS'u etkinlestirmek icin ;
-app.UseCors("MyTestCors");
+app.UseCors("AllowAll");
+
+// Default Policy icin ;
+app.UseCors();
 
 // NOT !!! ; UseAuthorization dan once yapmamiz gerekiyor.
 
