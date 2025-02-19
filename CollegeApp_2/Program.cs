@@ -226,6 +226,8 @@ app.UseHttpsRedirection();
 
 // ----------------------------------------- Enabling CORS ------------------------------------------------------------------
 
+app.UseRouting();
+
 // CORS'u etkinlestirmek icin ;
 app.UseCors("AllowAll");
 
@@ -236,8 +238,29 @@ app.UseCors();
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+
 app.UseAuthorization();
 
-app.MapControllers();
+// ----------------------------------------- Enabling CORS ------------------------------------------------------------------
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapGet("api/testingendpoint",                                   // Yerel ana bilgisayar
+        context => context.Response.WriteAsync("Test Respons"))
+        .RequireCors("AllowAll");
+
+    endpoints.MapControllers()                                  // Burada uygulama denetleyicimizi eþler
+             .RequireCors("AllowOnlyLocalhost");
+
+    endpoints.MapGet("api/testingendpoint2",                                  // Ýstek ve yanit burada iþlenir
+        context => context.Response.WriteAsync("Test Respons 2"));
+});
+
+//Yukariya  " app.UseCors(); " in üstüne  " app.UseRouting(); "  eklemelisin
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//app.MapControllers();
 
 app.Run();
