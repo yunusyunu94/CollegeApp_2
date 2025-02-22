@@ -3,6 +3,7 @@ using AutoMapper;
 using CollegeApp_2.Data;
 using CollegeApp_2.Data.Repository;
 using CollegeApp_2.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ namespace CollegeApp_2.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors(policyName: "AllowOnlyLocalhost")]  // Program.cs de tanimladigimiz CORS yontemlerinden hangisini kullanicaksak controllere bu sekilde uyguluyoruz
+    [Authorize(Roles ="Superadmin,Admin")]
 
     public class StudentController : ControllerBase
     {
@@ -48,6 +50,7 @@ namespace CollegeApp_2.Controllers
         [Route("All", Name = "GetStudents")]                        // Name Routenin adi
         [ProducesResponseType(StatusCodes.Status200OK)]            // Hata kodlarin kullanicilar tarafindan okunabilmesi 
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]  // Sunucu hatasi varsa
+        [AllowAnonymous]  // jwt token kisitlama yok demek
         public async Task<ActionResult<IEnumerable<StudentDTO>>> GetStudents()
         {
 

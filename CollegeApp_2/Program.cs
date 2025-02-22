@@ -240,6 +240,23 @@ app.UseCors();
 
 
 
+// ----------------------------------------- JWT TOKEN ------------------------------------------------------------------
+
+// Ýlk once ;
+// Nugetten assagidaki kutuphaneyi yukuyoruz
+// Microsoft.AspNetCore.Authentication.JwtBearer
+
+// Ýkinci olarak ;
+// 3 tane Controller var hangisini guvenli uc noktasi hangilerinin genel uc noktasi oldugunu belirtmemiz lazim bunun icin ;
+// StudentController da [Authorize(Roles ="Superadmin")] Roles ile erisimi kisitlamasi verebiliriz burada yalniz Superadmin erisimi olanlar icerigi gorebilir
+// Eger kisitlama olmicaksa  [AllowAnonymous] demeliyiz, StudentController de GetStudents de yaptigimiz gibi erisimde kisitlama olmayacaktir
+
+// Ucuncu olarak ;
+// Secret Key gizli anahtara ihtiyacimiz var bunun icin appsettings.json da Secret Key gizli anahtari olusturucaz
+// Sonra unu okumak icin Enabling CORS da tanimlamamiz gerek "  builder.Configuration.GetValue<string>("JWTSecret")  " seklinde
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.UseAuthorization();
 
 // ----------------------------------------- Enabling CORS ------------------------------------------------------------------
@@ -254,7 +271,7 @@ app.UseEndpoints(endpoints =>
              .RequireCors("AllowOnlyLocalhost");
 
     endpoints.MapGet("api/testingendpoint2",                                  // Ýstek ve yanit burada iþlenir
-        context => context.Response.WriteAsync("Test Respons 2"));
+        context => context.Response.WriteAsync(builder.Configuration.GetValue<string>("JWTSecret")));
 });
 
 //Yukariya  " app.UseCors(); " in üstüne  " app.UseRouting(); "  eklemelisin
