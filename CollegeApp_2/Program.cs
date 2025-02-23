@@ -1,11 +1,14 @@
 using System;
+using System.Text;
 using CollegeApp_2.Configurations;
 using CollegeApp_2.Data;
 using CollegeApp_2.Data.Repository;
 using CollegeApp_2.Mylogging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 
@@ -69,11 +72,6 @@ builder.Services.AddDbContext<CollegeDBContext>(option =>
                                                                                               // Appsettings.js de danimladigimiz baglandi dizisini
                                                                                               // adini yaziyoruz.
 });
-
-
-
-
-
 
 
 
@@ -257,6 +255,32 @@ app.UseCors();
 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// ----------------------------------------- JWT Authentication Configuration ------------------------------------------------------------------
+
+var key = Encoding.ASCII.GetBytes(builder.Configuration.GetValue<string>("JWTSecret"));
+
+builder.Services.AddAuthentication(options => {
+
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;  // Varsayilan kimlik dogrulama semasi
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;     // Varsayilan Medya okuma semasi
+}).AddJwtBearer(options =>
+{
+   // options.RequireHttpsMetadata = false; // HTTP sorunu yasiyorsak, https yerine http de calisir uretim ortaminda falsa yapmamaliyiz
+   options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+
+        ValidateIssuerSigningKey = true, // Yayincinin imzalama anahtari
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false, // Yayinciyi dogrulamak
+        ValidateAudience = false,
+
+    };
+});
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 app.UseAuthorization();
 
 // ----------------------------------------- Enabling CORS ------------------------------------------------------------------
